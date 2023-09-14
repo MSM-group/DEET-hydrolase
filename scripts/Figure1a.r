@@ -33,4 +33,4 @@ pl2 <- ggplot(percwat, aes(expt_treatment, gene_prop, color = factor(expt), fill
   scale_x_continuous(limits = c(0, 100), breaks=c(0, 10, 30, 80, 100))
 pl2
 
-ggsave("output/Fig1a.png", pl2, width = 6, height = 6)
+ggsave("output/Figure1a.png", pl2, width = 6, height = 6)
