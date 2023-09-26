@@ -84,7 +84,7 @@ p3 <- ggplot(data = maprdat_long) +
     legend.position = "left") +
   scale_x_continuous(limits = c(1,4), breaks = c(1,1.5,2, 2.5, 3, 3.5, 4)) +
   scale_y_discrete(position = "right", limits = rev(levels(maprdat_long$enzyme))) +
-  geom_vline(aes(xintercept = 2.135), linetype = "dashed", color = "gray60")
+  geom_vline(aes(xintercept = 2.135), linetype = "dotted", color = "gray60")
 p3
 
 ggsave( "output/Figure3.png", p3, width = 8, height = 5)
