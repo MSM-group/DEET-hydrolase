@@ -6,7 +6,9 @@ library(readxl)
 library(ggnewscale)
 library(ggstar)
 library(ggtree)
-color_palette <- read_csv("output/DEET_hydrolase_trees/taxonomic_phylum_color_palette.csv")
+
+# Set color palette and define functions
+color_palette <- read_csv("data/taxonomy/taxonomic_phylum_color_palette_original.csv")
 rename_seq_lab <- function(name){
   dplyr::case_when(str_detect(name, "k121")|str_detect(name, "DEET")|str_detect(name, "Cocaine") ~ name,
                    str_detect(name, "WP") ~ str_remove(name, "\\."),
@@ -19,8 +21,8 @@ generate_tip_labs <- function(lab, p_lab, deet, methylbenozoate, fournpb, fournp
                    TRUE ~ "")
 }
 add_phylum <- function(name, phy){
-  case_when(name %in% c("DEET_hydrolase", "1MJ5", "3HI4", "6QHV", "k121_72495_6")|str_detect(name, "WP") ~ "Proteobacteria",
-            name %in% c("Cocaine_esterase", "k121_1133021_48") ~ "Actinobacteriota",
+  case_when(name %in% c("DEET_hydrolase", "1MJ5", "3HI4", "6QHV", "k121_72495_6")|str_detect(name, "WP") ~ "Proteobacteria", # naming updated to Pseudomonadota
+            name %in% c("Cocaine_esterase", "k121_1133021_48") ~ "Actinobacteriota", # naming updated to Actinomycetota
             name == "k121_530580_16" ~ "Gemmatimonadota",
             TRUE ~ phy)
 }
@@ -51,21 +53,24 @@ get_4np_trimethylacetate_star_x <- function(deet, methylbenozoate, fournpb, four
             TRUE ~ NA)
   
 }
-p_labels <- readxl::read_excel("data/metadata/Batch353_master_table_CORRECTED.xlsx") %>%
-  dplyr::filter(project == "DEET") %>%
-  dplyr::select(name, corrected_users_name) %>%
-  dplyr::mutate(p_name = stringr::word(name, sep = "_", start = 2, end = 2),
-                seqid = stringr::word(corrected_users_name, sep = "_", start = 1, end = 3)) %>%
+
+# Read in the tree labels
+p_labels <- readxl::read_excel("data/taxonomy/table_s2_original.xlsx", skip = 1) %>%
+  dplyr::select(id, name) %>%
+  dplyr::mutate(p_name = id,
+                seqid = stringr::word(name, sep = "_", start = 1, end = 3)) %>%
   dplyr::select(seqid, p_name) %>%
   dplyr::add_row(seqid = "DEET_hydrolase", p_name = "DH")
 
-assay_res <- read_rds("data/assay_tree_data.rds")
-assay_res
-metadat <- read_csv("data_from_SR/64_DEET_hydrolases_filename_metadata.csv") %>%
-  mutate(seqid = word(clnseqnam, sep = "_", start = 1, end = 3)) %>%
+assay_res <- read_rds("data/enzyme_activity_data/assay_tree_data.rds")
+
+# Read in the taxonomy data
+metadat <- read_excel("data/taxonomy/table_s2_original.xlsx", skip = 1) %>%
+  mutate(seqid = word(name, sep = "_", start = 1, end = 3)) %>%
   select(seqid, phylum)
-seq_based_tree$tip.label
-seq_based_tree <- ape::read.tree("data/phylogeny/bootstrap_100/DH_tree_bootstrap_100.treefile") %>%
+
+# Sequence-based tree
+seq_based_tree <- ape::read.tree("data/phylogeny/DH_tree_bootstrap_100.treefile") %>%
   treeio::as_tibble() %>%
   mutate(label = rename_seq_lab(label)) %>%
   left_join(metadat, by = c("label" = "seqid")) %>%
@@ -75,7 +80,7 @@ seq_based_tree <- ape::read.tree("data/phylogeny/bootstrap_100/DH_tree_bootstrap
   lab = generate_tip_labs(label, p_name, diethyltoluamide, methylbenzoate, x4np_butyrate, x4np_trimethylacetate) %>%
   treeio::as.treedata()
 
-seq_based_tree_plot <- ggtree::ggtree(seq_based_tree)
+# Structure-based tree
 struc_based_tree <- readr::read_rds("data/phylogeny/rmsd_tree.rds") %>%
   ape::root(outgroup = c("6QHV", "1MJ5", "3HI4"))
 struc_based_tree_plot <- ggtree::ggtree(struc_based_tree) +
@@ -126,7 +131,7 @@ combined_tree <- struc_based_tree_plot_2 +
 
 
 ggplot2::ggsave(combined_tree,
-                filename = "output/DEET_hydrolase_trees/seq_struc_tree_bootstrap_100_treefile.png",
+                filename = "output/Figure2b.png",
                 dpi = 320,
                 device = "png",
                 units = "in",
