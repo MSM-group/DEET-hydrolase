@@ -157,7 +157,7 @@ def process_folder(folder_path):
     for pdb_file in pdb_files:
         # Load the PDB file and assign the name 'prot1'
         cmd.load(pdb_file, 'prot2')
-        cmd.load(r"\\eawag\userdata\felderfl\Desktop\alpha_helix_test\Reference.pdb",'prot1')
+        cmd.load('yourfolderpath\Reference.pdb",'prot1')
         
         prot1='prot1'
         prot2='prot2'
