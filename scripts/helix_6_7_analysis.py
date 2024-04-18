@@ -172,7 +172,7 @@ def process_folder(folder_path):
         cmd.reinitialize()
 
 
-folder_path = r'\\eawag\userdata\felderfl\Desktop\alpha_helix_test\pdb_folder'
+folder_path = 'yourfolderpath'
 
 # Call the function to process the folder
 process_folder(folder_path)

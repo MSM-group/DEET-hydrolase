@@ -6,7 +6,7 @@ import os
 pymol.finish_launching(['pymol', '-qxi'])
 
 # Define the folder path containing the protein structure files
-folder_path = '//eawag/userdata/felderfl/Desktop/alpha_helix_test'
+folder_path = 'yourfolderpath'
 
 # Define the name of the output text file
 output_file_name = 'alpha_helix_counts.txt'
